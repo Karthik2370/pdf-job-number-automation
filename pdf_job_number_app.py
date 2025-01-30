@@ -29,6 +29,12 @@ st.markdown("""
             margin-top: 20px;
             margin-bottom: 20px;
         }
+        
+        /* Ensure uploaded file names are visible */
+        .uploadedFileName {
+            color: white !important;  /* Adjust for dark theme */
+            font-weight: bold;
+        }
 
         /* File Upload Styling */
         .stFileUploader > div {
