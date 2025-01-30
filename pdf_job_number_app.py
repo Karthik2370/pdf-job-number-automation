@@ -95,10 +95,10 @@ with col2:
     st.title("PDF OCR Filler")
     st.markdown("Upload your PDFs, enter a job number, and download the modified files.")
 
-# ✅ File uploader
+# File uploader
 uploaded_files = st.file_uploader("📂 Upload PDFs", type=["pdf"], accept_multiple_files=True)
 
-# ✅ Job number input
+# Job number input
 job_number = st.text_input("🔢 Enter Job Number", placeholder="E.g., EISPL / 14297 / SEA")
 
 # ✅ Session State to Store Processed PDFs (Prevents Refresh Issues)
@@ -120,7 +120,11 @@ def add_job_number_to_pdf(input_pdf, job_number):
     writer = PdfWriter()
 
     first_page = reader.pages[0]
+
+    # ✅ Detect Rotation
     rotation = first_page.get("/Rotate") or 0
+
+    # ✅ Get Page Dimensions
     width = float(first_page.mediabox.width)
     height = float(first_page.mediabox.height)
 
@@ -131,23 +135,30 @@ def add_job_number_to_pdf(input_pdf, job_number):
     can.setFillColor(red)
 
     # ✅ Ensure Text is Always Horizontal and at the Top Center
-    text_width = can.stringWidth(job_number, "Helvetica-Bold", 18)
-    x_position = (width - text_width) / 2
-    y_position = height - 30
-
-    if rotation == 90:
+    if rotation == 90:  # Rotated Right
         can.translate(width, 0)
         can.rotate(90)
-        x_position, y_position = (height - text_width) / 2, width - 30
-    elif rotation == 270:
+        text_width = can.stringWidth(job_number, "Helvetica-Bold", 18)
+        x_position = (height - text_width) / 2
+        y_position = width - 30
+    elif rotation == 270:  # Rotated Left
         can.translate(0, height)
         can.rotate(-90)
-        x_position, y_position = (height - text_width) / 2, 30
-    elif rotation == 180:
+        text_width = can.stringWidth(job_number, "Helvetica-Bold", 18)
+        x_position = (height - text_width) / 2
+        y_position = 30
+    elif rotation == 180:  # Upside Down
         can.translate(width, height)
         can.rotate(180)
-        x_position, y_position = (width - text_width) / 2, 50
+        text_width = can.stringWidth(job_number, "Helvetica-Bold", 18)
+        x_position = (width - text_width) / 2
+        y_position = 50
+    else:  # Normal Page (0°)
+        text_width = can.stringWidth(job_number, "Helvetica-Bold", 18)
+        x_position = (width - text_width) / 2
+        y_position = height - 30
 
+    # ✅ Draw the Job Number in the Correct Position
     can.drawString(x_position, y_position, job_number)
     can.save()
 
@@ -168,10 +179,11 @@ def add_job_number_to_pdf(input_pdf, job_number):
 
     return output_pdf
 
+
 # ✅ Process PDFs and Store Outputs for Merging
 if st.button("🚀 Process PDFs"):
     if uploaded_files and job_number:
-        st.session_state.processed_pdfs = []
+        st.session_state.processed_pdfs = []  # Reset previous session data
         st.session_state.processed_filenames = []
         
         with st.spinner("⏳ Processing PDFs... Please wait!"):
@@ -179,8 +191,11 @@ if st.button("🚀 Process PDFs"):
                 modified_pdf = add_job_number_to_pdf(uploaded_file, job_number)
                 st.session_state.processed_pdfs.append(modified_pdf)
                 st.session_state.processed_filenames.append(f"modified_{uploaded_file.name}")
+
+                # Show file name before download
                 st.success(f"✅ Successfully processed: {uploaded_file.name}")
 
+        # ✅ Store processed PDFs in session state to avoid page refresh issues
         st.session_state.processed_ready = True
     else:
         st.warning("⚠️ Please upload at least one PDF and enter a job number.")
@@ -188,10 +203,17 @@ if st.button("🚀 Process PDFs"):
 # ✅ Display Download Buttons Without Page Refresh
 if st.session_state.get("processed_ready", False):
     for pdf, filename in zip(st.session_state.processed_pdfs, st.session_state.processed_filenames):
-        st.download_button(label=f"📥 Download {filename}", data=pdf, file_name=filename, mime="application/pdf")
+        st.download_button(
+            label=f"📥 Download {filename}",
+            data=pdf,
+            file_name=filename,
+            mime="application/pdf"
+        )
 
+    # ✅ Merge PDFs if multiple are processed
     if len(st.session_state.processed_pdfs) > 1:
         merged_pdf_writer = PdfWriter()
+        
         for pdf in st.session_state.processed_pdfs:
             pdf_reader = PdfReader(pdf)
             for page in pdf_reader.pages:
@@ -200,14 +222,20 @@ if st.session_state.get("processed_ready", False):
         merged_pdf_output = io.BytesIO()
         merged_pdf_writer.write(merged_pdf_output)
         merged_pdf_output.seek(0)
-        st.download_button(label="📥 Download Merged PDF", data=merged_pdf_output, file_name="merged_output.pdf", mime="application/pdf")
+        
+        st.success("📌 All processed PDFs have been merged into one file!")
 
-# ✅ Refresh Button
+        # ✅ Provide Download Button for Merged PDF
+        st.download_button(
+            label="📥 Download Merged PDF",
+            data=merged_pdf_output,
+            file_name="merged_output.pdf",
+            mime="application/pdf"
+        )
+
+# ✅ Refresh Button to Clear Processed PDFs
 if st.button("🔄 Refresh"):
     st.session_state.processed_pdfs = []
     st.session_state.processed_filenames = []
     st.session_state.processed_ready = False
-    st.success("🔄 Ready for new entries!")
-
-
-
+    st.success("🔄 All processed PDFs have been cleared! Ready for new entries.")
