@@ -5,89 +5,14 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.colors import red
 
 # Set up the page configuration
-st.set_page_config(page_title="PDF Job Number Automation", layout="centered", page_icon="📄")
+st.set_page_config(page_title="PDF Job Number Automation", layout="centered")
 
-# ✅ Custom Styling for UI Enhancements
+# Custom Styling
 st.markdown("""
     <style>
-        /* Move Logo to Top Left */
-        .logo-container {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            width: 120px;
-        }
-
-        /* Center Main Content */
-        .stApp { display: flex; flex-direction: column; align-items: center; }
-
-        /* Title Styling */
-        .title-container { 
-            text-align: center; 
-            font-weight: bold;
-            color: #004aad;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        
-        /* Ensure uploaded file names are visible */
-        .uploadedFileName {
-            color: white !important;  /* Adjust for dark theme */
-            font-weight: bold;
-        }
-
-        /* File Upload Styling */
-        .stFileUploader > div {
-            border-radius: 12px;
-            padding: 12px;
-            background: #f4f7fc;
-            border: 2px dashed #004aad;
-            transition: 0.3s;
-        }
-
-        /* Input Fields */
-        .stTextInput > div > div > input {
-            border-radius: 8px;
-            border: 1px solid #004aad;
-            padding: 12px;
-            background-color: white;
-        }
-
-        /* Buttons */
-        .stButton > button {
-            border-radius: 8px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #004aad, #007bff);
-            color: white;
-            padding: 12px;
-            border: none;
-            transition: 0.3s;
-        }
-
-        .stButton > button:hover {
-            background: linear-gradient(135deg, #003080, #0056b3);
-        }
-
-        /* Success Messages */
-        .stSuccess {
-            background: #e6f7ff;
-            color: #004aad;
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        /* Download Button */
-        .stDownloadButton > button {
-            border-radius: 8px;
-            padding: 12px;
-            background: #28a745;
-            color: white;
-            transition: 0.3s;
-        }
-
-        .stDownloadButton > button:hover {
-            background: #218838;
-        }
+        .main { background-color: #f4f4f4; }
+        .stTextInput { border-radius: 10px; }
+        .logo-container { text-align: center; margin-bottom: 10px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -100,7 +25,6 @@ with col1:
 with col2:
     st.title("PDF OCR Filler")
     st.markdown("Upload your PDFs, enter a job number, and download the modified files.")
-
 # File uploader
 uploaded_files = st.file_uploader("📂 Upload PDFs", type=["pdf"], accept_multiple_files=True)
 
