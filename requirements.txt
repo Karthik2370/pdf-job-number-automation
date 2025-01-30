@@ -1,3 +1,9 @@
 streamlit
 PyPDF2
+pytesseract
+opencv-python
+pdf2image
+Pillow
+numpy
+pandas
 reportlab
