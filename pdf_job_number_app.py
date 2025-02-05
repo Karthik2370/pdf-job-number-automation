@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import io
 from PyPDF2 import PdfReader, PdfWriter
@@ -10,6 +11,12 @@ from pdf2image import convert_from_path
 from PIL import Image
 import re
 import pandas as pd
+
+# Set Tesseract path for Streamlit Cloud (Linux) or local (Windows)
+if os.name == 'nt':  # Windows
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+else:  # Linux (Streamlit Cloud)
+    pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 # ✅ Set up the page configuration
 st.set_page_config(page_title="Logistics PDF Tool", layout="centered")
