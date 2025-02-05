@@ -1,4 +1,4 @@
-tesseract-ocr=4.1.1
+tesseract-ocr
 poppler-utils
 libgl1
 libglib2.0-0
