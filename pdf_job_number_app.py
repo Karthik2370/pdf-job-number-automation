@@ -199,4 +199,3 @@ elif task == "BOE Data Extraction":
 
         st.table(data)
         st.download_button("📅 Download Extracted Data (CSV)", data=pd.DataFrame(data).to_csv(index=False), file_name="boe_details.csv", mime="text/csv")
-
