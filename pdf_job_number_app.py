@@ -10,6 +10,7 @@ from pdf2image import convert_from_path
 from PIL import Image
 import re
 import pandas as pd
+
 # ✅ Set up the page configuration
 st.set_page_config(page_title="Logistics PDF Tool", layout="centered")
 
@@ -62,6 +63,8 @@ if task == "PDF Job Number Automation":
         can.setFont("Helvetica-Bold", 18)
         can.setFillColor(red)
 
+        print(f"Rotation: {rotation}, Width: {width}, Height: {height}")
+
         if rotation == 90:
             can.translate(width, 0)
             can.rotate(90)
@@ -83,7 +86,7 @@ if task == "PDF Job Number Automation":
         else:
             text_width = can.stringWidth(job_number, "Helvetica-Bold", 18)
             x_position = (width - text_width) / 2
-            y_position = height - 30
+            y_position = height - 50  # Adjusted from -30 to -50
 
         can.drawString(x_position, y_position, job_number)
         can.save()
@@ -121,7 +124,7 @@ if task == "PDF Job Number Automation":
     if st.session_state.get("processed_ready", False):
         for pdf, filename in zip(st.session_state.processed_pdfs, st.session_state.processed_filenames):
             st.download_button(
-                label=f"📥 Download {filename}",
+                label=f"📅 Download {filename}",
                 data=pdf,
                 file_name=filename,
                 mime="application/pdf"
@@ -140,7 +143,7 @@ if task == "PDF Job Number Automation":
 
             st.success("📌 All processed PDFs have been merged into one file!")
             st.download_button(
-                label="📥 Download Merged PDF",
+                label="📅 Download Merged PDF",
                 data=merged_pdf_output,
                 file_name="merged_output.pdf",
                 mime="application/pdf"
@@ -195,5 +198,5 @@ elif task == "BOE Data Extraction":
         }
 
         st.table(data)
-        st.download_button("📥 Download Extracted Data (CSV)", data=pd.DataFrame(data).to_csv(index=False), file_name="boe_details.csv", mime="text/csv")
+        st.download_button("📅 Download Extracted Data (CSV)", data=pd.DataFrame(data).to_csv(index=False), file_name="boe_details.csv", mime="text/csv")
 
